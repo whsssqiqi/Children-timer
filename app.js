@@ -24,7 +24,7 @@ addCharacterBtn.addEventListener('click', function() {
 
             // 添加完一个人物后，展示在角色列表
             const childElement = document.createElement('div');
-            childElement.classList.add('child-item');
+            childElement.classList.add('character-item');
             childElement.innerHTML = `
                 <img src="${child.avatar}" alt="${child.name}">
                 <p>${child.name}</p>
@@ -53,11 +53,11 @@ function renderChildren() {
     childList.innerHTML = '';
     children.forEach((child, index) => {
         const childElement = document.createElement('div');
-        childElement.classList.add('child-item');
+        childElement.classList.add('character-item');
         childElement.innerHTML = `
             <img src="${child.avatar}" alt="${child.name}" onclick="startTimer(${index})">
             <p>${child.name}</p>
-            <img class="crown" src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Gold_crown.svg" style="display:none;" />
+            <img class="crown" src="icon.png" style="display:none;" />
         `;
         childList.appendChild(childElement);
     });
@@ -65,9 +65,7 @@ function renderChildren() {
 
 // 点击头像后启动计时器
 function startTimer(index) {
-    // 在这里加入计时器逻辑，点击头像时显示皇冠并开始计时
-    const selectedChild = children[index];
     const crown = childList.children[index].querySelector('.crown');
     crown.style.display = 'block';
-    console.log(`${selectedChild.name} 开始计时`);
+    console.log(`${children[index].name} 开始计时`);
 }

@@ -26,21 +26,7 @@ function loadChildren() {
         loginPage.style.display = 'none';
         appPage.style.display = 'block';
         renderChildren();
-        restoreTimers(); // 恢复计时器状态
     }
-}
-
-// 恢复计时器状态
-function restoreTimers() {
-    // 如果有保存的时间状态，恢复计时器
-    timeStates.forEach((time, index) => {
-        if (time > 0) {
-            const currentTimerText = document.getElementById(`timer-${index}`);
-            const minutes = Math.floor(time / 60);
-            const seconds = time % 60;
-            currentTimerText.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
-    });
 }
 
 // 在计时器页面渲染角色
@@ -150,9 +136,6 @@ endOfDayBtn.addEventListener('click', function() {
         championName.textContent = children[championIndex].name;
         championDisplay.style.display = 'block';
     }
-
-    // 在结算冠军后清除计时器状态
-    clearAllTimers();
 });
 
 // 重置按钮
@@ -164,7 +147,6 @@ resetBtn.addEventListener('click', function() {
     timeStates = [];
     championDisplay.style.display = 'none';
     timerDisplay.textContent = '00:00';
-    clearAllTimers(); // 清除所有计时器
 });
 
 // 重置所有计时器
@@ -174,15 +156,6 @@ function resetTimers() {
     timers = []; // 清空所有计时器数据
     const allTimers = document.querySelectorAll('.timer-text');
     allTimers.forEach(timer => timer.textContent = '00:00'); // 重置所有计时器显示
-}
-
-// 清除所有计时器
-function clearAllTimers() {
-    activeTimers.forEach(timer => clearInterval(timer)); // 停止所有计时器
-    activeTimers = []; // 清空所有计时器
-    timeStates = []; // 清空所有时间状态
-    const allTimers = document.querySelectorAll('.timer-text');
-    allTimers.forEach(timer => timer.textContent = '00:00'); // 清空显示
 }
 
 // 在页面加载时检查 localStorage 数据

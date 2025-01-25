@@ -1,0 +1,76 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f3f4f6;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.child-list {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.child-item {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.child-item img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    border: 3px solid #ddd;
+    transition: transform 0.2s;
+}
+
+.child-item img:hover {
+    transform: scale(1.1);
+}
+
+.crown {
+    position: absolute;
+    top: -10px;
+    left: 30px;
+    width: 40px;
+}
+
+.timer {
+    margin-top: 20px;
+}
+
+#timerDisplay {
+    font-size: 30px;
+    font-weight: bold;
+    color: #333;
+}
+
+.end-day-btn {
+    margin-top: 30px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.end-day-btn:hover {
+    background-color: #45a049;
+}
+
+.winner {
+    margin-top: 30px;
+    font-size: 18px;
+}

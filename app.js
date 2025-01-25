@@ -11,34 +11,13 @@ let children = []; // 存储角色数据
 let activeTimers = []; // 存储每个角色的计时器
 let timeStates = []; // 存储每个角色的时间状态（暂停时的时间）
 
-// 加载并显示已存储的角色
-function loadChildren() {
-    if (children.length > 0) {
-        loginPage.style.display = 'none';
-        appPage.style.display = 'block';
-        renderChildren();
-    }
-}
-
-// 渲染角色列表
-function renderChildren() {
-    childList.innerHTML = '';
-    children.forEach((child, index) => {
-        const childElement = document.createElement('div');
-        childElement.classList.add('character-item');
-        childElement.innerHTML = `
-            <img src="${child.avatar}" alt="${child.name}" onclick="startTimer(${index})">
-            <p>${child.name}</p>
-            <img class="crown" src="icon.png" style="display:none;" />
-        `;
-        childList.appendChild(childElement);
-    });
-}
-
 // 点击加号按钮时显示角色输入框
 addCharacterBtn.addEventListener('click', function() {
+    // 清空输入框
     usernameInput.value = '';
     avatarInput.value = '';
+    
+    // 显示角色输入界面
     loginPage.style.display = 'block';
     appPage.style.display = 'none';
 });
@@ -52,7 +31,7 @@ confirmBtn.addEventListener('click', function() {
         const reader = new FileReader();
         reader.onload = function() {
             const avatarUrl = reader.result;
-            const child = { name: username, avatar: avatarUrl };
+            const child = { name: username, avatar: avatarUrl, id: children.length }; // 为每个角色添加唯一 id
             children.push(child);
             renderChildren();  // 渲染角色列表
             confirmBtn.style.display = 'none'; // 隐藏确认按钮
@@ -62,6 +41,34 @@ confirmBtn.addEventListener('click', function() {
         reader.readAsDataURL(avatarFile);
     }
 });
+
+// 渲染角色列表
+function renderChildren() {
+    childList.innerHTML = ''; // 清空角色列表
+    children.forEach((child, index) => {
+        const childElement = document.createElement('div');
+        childElement.classList.add('character-item');
+        childElement.innerHTML = `
+            <img src="${child.avatar}" alt="${child.name}" class="avatar-circle">
+            <p>${child.name}</p>
+            <button class="delete-btn" onclick="deleteCharacter(${index})">×</button>
+        `;
+        childList.appendChild(childElement);
+    });
+
+    // 在所有角色都被录入后显示“确定录入”按钮
+    if (children.length > 0) {
+        confirmBtn.style.display = 'block'; // 显示确认按钮
+    } else {
+        confirmBtn.style.display = 'none'; // 隐藏确认按钮
+    }
+}
+
+// 删除成员
+function deleteCharacter(index) {
+    children.splice(index, 1);
+    renderChildren(); // 更新角色列表
+}
 
 // 点击头像后启动计时器
 function startTimer(index) {
@@ -86,5 +93,14 @@ function startTimer(index) {
     }, 1000);
 }
 
-// 在页面加载时检查 localStorage 数据
+// 在页面加载时检查角色数据
+function loadChildren() {
+    if (children.length > 0) {
+        loginPage.style.display = 'none';
+        appPage.style.display = 'block';
+        renderChildren();
+    }
+}
+
+// 页面加载时调用
 loadChildren();

@@ -82,6 +82,13 @@ button:hover {
     transform: translate(-50%, -50%);
 }
 
+.character-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
 .character-item {
     position: relative;
     margin: 10px;
@@ -114,20 +121,22 @@ button:hover {
     background-color: darkred;
 }
 
-/* Adjust the crown position */
 .crown {
     position: absolute;
-    top: -18px; /* Adjusting position above the avatar */
-    left: 30px; /* Aligning the crown on top of the avatar */
+    top: -15px;
+    left: 30px;
     width: 30px;
     display: none;
 }
 
-.timer-display {
+.timer {
+    margin-top: 20px;
+}
+
+#timerDisplay {
     font-size: 40px;
     font-weight: bold;
     color: #333;
-    margin-top: 20px;
 }
 
 .confirm-button {
@@ -142,6 +151,33 @@ button:hover {
 
 .confirm-button:hover {
     background-color: #e6c200;
+}
+
+.end-of-day-btn {
+    background-color: #007bff;
+    font-size: 18px;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.end-of-day-btn:hover {
+    background-color: #0056b3;
+}
+
+.champion-display {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#championAvatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin-bottom: 10px;
 }
 
 /* Mobile responsiveness */

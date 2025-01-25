@@ -18,7 +18,6 @@ let children = JSON.parse(localStorage.getItem('children')) || [];
 let timers = []; // 存储每个角色的计时器
 let activeTimers = []; // 存储每个角色的计时器
 let timeStates = []; // 存储每个角色的时间状态（暂停时的时间）
-let currentTimerIndex = -1; // 当前持有皇冠的角色索引
 
 // 加载并显示已存储的角色
 function loadChildren() {
@@ -88,11 +87,11 @@ function deleteCharacter(index) {
 // 点击头像后启动计时器
 function startTimer(index) {
     // 停止当前计时器
-    if (currentTimerIndex !== -1 && currentTimerIndex !== index) {
-        clearInterval(activeTimers[currentTimerIndex]); // 停止其他计时器
-        const oldTimer = document.getElementById(`timer-${currentTimerIndex}`);
-        oldTimer.style.fontWeight = 'normal'; // 恢复之前计时器样式
-    }
+    activeTimers.forEach((timer, i) => {
+        if (i !== index) {
+            clearInterval(timer); // 停止其他计时器
+        }
+    });
 
     // 隐藏其他皇冠
     const allCrowns = document.querySelectorAll('.crown');
@@ -102,20 +101,15 @@ function startTimer(index) {
     const crown = childList.children[index].querySelector('.crown');
     crown.style.display = 'block';
 
-    // 设置当前角色为正在计时的角色
-    currentTimerIndex = index;
-
-    // 更新计时器显示
-    const currentTimerText = document.getElementById(`timer-${index}`);
-    currentTimerText.style.fontWeight = 'bold'; // 高亮显示当前角色的计时器
-
     let time = timeStates[index] || 0; // 如果之前有暂停时间则继续
     activeTimers[index] = setInterval(function() {
         time++;
         timeStates[index] = time; // 保存当前时间状态
         const minutes = Math.floor(time / 60);
         const seconds = time % 60;
-        currentTimerText.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        // 更新计时器显示
+        const timerText = document.getElementById(`timer-${index}`);
+        timerText.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }, 1000);
 }
 

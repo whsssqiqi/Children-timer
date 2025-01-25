@@ -8,7 +8,7 @@ const avatarInput = document.getElementById('avatar');
 let children = JSON.parse(localStorage.getItem('children')) || [];
 
 loginForm.addEventListener('submit', function(e) {
-    e.preventDefault();
+    e.preventDefault(); // 防止表单刷新页面
 
     const username = usernameInput.value;
     const avatarFile = avatarInput.files[0];
@@ -21,18 +21,25 @@ loginForm.addEventListener('submit', function(e) {
             children.push(child);
             localStorage.setItem('children', JSON.stringify(children));
 
-            // Hide login and show the app page
+            console.log('头像和名字保存成功，跳转到应用页面');
+
+            // 隐藏登录页面，显示应用页面
             loginPage.style.display = 'none';
             appPage.style.display = 'block';
 
-            // Render children avatars and names
+            // 渲染孩子的头像和名字
             renderChildren();
         };
-        reader.readAsDataURL(avatarFile);
+        reader.onerror = function() {
+            console.error('文件读取失败');
+        };
+        reader.readAsDataURL(avatarFile); // 读取文件
+    } else {
+        console.error('请输入名字和上传头像');
     }
 });
 
-// Render children on the app page
+// 渲染所有孩子的信息
 function renderChildren() {
     childList.innerHTML = '';
     children.forEach((child, index) => {
@@ -47,9 +54,10 @@ function renderChildren() {
     });
 }
 
-// Start timer (same as before)
+// 点击头像后启动计时器（功能和之前相同）
 function startTimer(index) {
-    // Handle the timer functionality here (same as previous)
+    console.log('计时器功能正在执行', index);
+    // 处理计时器的逻辑
 }
 
 renderChildren();

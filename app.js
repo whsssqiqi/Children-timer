@@ -7,8 +7,11 @@ const addCharacterBtn = document.getElementById('addCharacterBtn');
 const confirmBtn = document.getElementById('confirmBtn');
 const characterList = document.getElementById('characterList');
 const childList = document.getElementById('childList');
+const timerDisplay = document.getElementById("timerDisplay");
 
 let children = [];
+let currentTimer = null;
+let timers = []; // 用来存储每个孩子的计时器
 
 // 添加人物
 addCharacterBtn.addEventListener('click', function() {
@@ -65,7 +68,32 @@ function renderChildren() {
 
 // 点击头像后启动计时器
 function startTimer(index) {
+    // 停止当前计时器
+    if (currentTimer !== null) {
+        clearInterval(currentTimer);
+    }
+
+    // 停止其他孩子的计时器
+    timers.forEach(timer => clearInterval(timer));
+    timers = [];
+
+    // 清除之前的皇冠
+    const allCrowns = document.querySelectorAll('.crown');
+    allCrowns.forEach(crown => crown.style.display = 'none');
+
+    // 显示当前头像的皇冠
     const crown = childList.children[index].querySelector('.crown');
     crown.style.display = 'block';
-    console.log(`${children[index].name} 开始计时`);
+
+    // 启动新的计时器
+    let time = 0; // 计时器初始时间（秒）
+    currentTimer = setInterval(function() {
+        time++;
+        const minutes = Math.floor(time / 60);
+        const seconds = time % 60;
+        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }, 1000);
+
+    // 存储当前的计时器
+    timers[index] = currentTimer;
 }

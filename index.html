@@ -27,12 +27,19 @@
 
     <!-- 计时器页面 -->
     <div id="appPage" class="app-page" style="display:none;">
-        <h1>今天的冠军是谁？</h1>
+        <h1>冠军统计</h1>
         <div id="childList" class="child-list"></div>
         <div id="currentTimer" class="timer">
             <p>当前计时：</p>
             <span id="timerDisplay">00:00</span>
         </div>
+        <button id="endOfDayBtn" class="end-of-day-btn">结算今天的冠军</button>
+        <div id="championDisplay" class="champion-display" style="display:none;">
+            <h2>今天的冠军是:</h2>
+            <img id="championAvatar" src="" alt="Champion Avatar" style="width: 100px; height: 100px; border-radius: 50%;">
+            <p id="championName"></p>
+        </div>
+        <button id="resetBtn" class="end-of-day-btn" style="display:none;">返回登录</button>
     </div>
 
     <script src="app.js"></script>

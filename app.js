@@ -8,10 +8,17 @@ const confirmBtn = document.getElementById('confirmBtn');
 const characterList = document.getElementById('characterList');
 const childList = document.getElementById('childList');
 const timerDisplay = document.getElementById("timerDisplay");
+const endOfDayBtn = document.getElementById('endOfDayBtn');
+const championDisplay = document.getElementById('championDisplay');
+const championAvatar = document.getElementById('championAvatar');
+const championName = document.getElementById('championName');
+const resetBtn = document.getElementById('resetBtn');
 
-let children = [];
-let currentTimer = null;
-let timers = []; // 用来存储每个孩子的计时器
+let children = JSON.parse(localStorage.getItem('children')) || [];
+let timers = [];
+let activeTimers = [];
+
+loadChildren();
 
 // 添加人物
 addCharacterBtn.addEventListener('click', function() {
@@ -24,17 +31,17 @@ addCharacterBtn.addEventListener('click', function() {
             const avatarUrl = reader.result;
             const child = { name: username, avatar: avatarUrl };
             children.push(child);
+            localStorage.setItem('children', JSON.stringify(children)); // 保存到localStorage
 
-            // 添加完一个人物后，展示在角色列表
             const childElement = document.createElement('div');
             childElement.classList.add('character-item');
             childElement.innerHTML = `
                 <img src="${child.avatar}" alt="${child.name}">
                 <p>${child.name}</p>
+                <button class="delete-btn" onclick="deleteCharacter(${children.length - 1})">×</button>
             `;
             characterList.appendChild(childElement);
 
-            // 显示确认按钮
             confirmBtn.style.display = 'block';
         };
         reader.readAsDataURL(avatarFile);
@@ -43,11 +50,8 @@ addCharacterBtn.addEventListener('click', function() {
 
 // 确认按钮，跳转到计时器页面
 confirmBtn.addEventListener('click', function() {
-    // 隐藏登录页面，显示计时器页面
     loginPage.style.display = 'none';
     appPage.style.display = 'block';
-
-    // 渲染计时器页面上的所有角色
     renderChildren();
 });
 
@@ -60,40 +64,66 @@ function renderChildren() {
         childElement.innerHTML = `
             <img src="${child.avatar}" alt="${child.name}" onclick="startTimer(${index})">
             <p>${child.name}</p>
-            <img class="crown" src="icon.png" style="display:none;" />
+            <button class="delete-btn" onclick="deleteCharacter(${index})">×</button>
         `;
         childList.appendChild(childElement);
     });
 }
 
+// 删除成员
+function deleteCharacter(index) {
+    children.splice(index, 1);
+    localStorage.setItem('children', JSON.stringify(children)); // 更新localStorage
+    renderChildren();
+}
+
 // 点击头像后启动计时器
 function startTimer(index) {
-    // 停止当前计时器
-    if (currentTimer !== null) {
-        clearInterval(currentTimer);
+    if (activeTimers[index]) {
+        clearInterval(activeTimers[index].timer);
     }
 
-    // 停止其他孩子的计时器
-    timers.forEach(timer => clearInterval(timer));
-    timers = [];
-
-    // 清除之前的皇冠
     const allCrowns = document.querySelectorAll('.crown');
     allCrowns.forEach(crown => crown.style.display = 'none');
 
-    // 显示当前头像的皇冠
     const crown = childList.children[index].querySelector('.crown');
     crown.style.display = 'block';
 
-    // 启动新的计时器
-    let time = 0; // 计时器初始时间（秒）
-    currentTimer = setInterval(function() {
+    let time = timers[index] || 0;
+    activeTimers[index] = { timer: setInterval(function() {
         time++;
+        timers[index] = time;
         const minutes = Math.floor(time / 60);
         const seconds = time % 60;
         timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }, 1000);
-
-    // 存储当前的计时器
-    timers[index] = currentTimer;
+    }, 1000) };
 }
+
+// 结算今天的冠军
+endOfDayBtn.addEventListener('click', function() {
+    let longestTime = 0;
+    let championIndex = -1;
+
+    timers.forEach((time, index) => {
+        if (time > longestTime) {
+            longestTime = time;
+            championIndex = index;
+        }
+    });
+
+    if (championIndex >= 0) {
+        championAvatar.src = children[championIndex].avatar;
+        championName.textContent = children[championIndex].name;
+        championDisplay.style.display = 'block';
+    }
+});
+
+// 重置按钮
+resetBtn.addEventListener('click', function() {
+    loginPage.style.display = 'block';
+    appPage.style.display = 'none';
+    timers = [];
+    activeTimers = [];
+    championDisplay.style.display = 'none';
+    timerDisplay.textContent = '00:00';
+});

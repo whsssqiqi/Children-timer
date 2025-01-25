@@ -1,0 +1,16 @@
+{
+  "name": "孩子自驱力计时器",
+  "short_name": "计时器",
+  "description": "帮助孩子自驱力的计时器应用。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4CAF50",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

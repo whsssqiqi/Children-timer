@@ -21,6 +21,7 @@ function loadChildren() {
     if (children.length > 0) {
         loginPage.style.display = 'none';
         appPage.style.display = 'block';
+        addCharacterBtn.style.display = 'none';  // 隐藏加号按钮，防止重复添加
         renderChildren();
     }
 }
@@ -47,6 +48,7 @@ addCharacterBtn.addEventListener('click', function() {
     avatarInput.value = '';
     loginPage.style.display = 'block';
     appPage.style.display = 'none';
+    addCharacterBtn.style.display = 'none'; // 确保加号按钮在登录页面时隐藏
 });
 
 // 点击确认按钮，跳转到计时器页面
@@ -65,6 +67,7 @@ confirmBtn.addEventListener('click', function() {
             confirmBtn.style.display = 'none'; // 隐藏确认按钮
             loginPage.style.display = 'none'; // 隐藏登录界面
             appPage.style.display = 'block';  // 显示计时器页面
+            addCharacterBtn.style.display = 'block'; // 在计时器页面时显示加号按钮
         };
         reader.readAsDataURL(avatarFile);
     }

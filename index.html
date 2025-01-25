@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>孩子自驱力计时器</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <div class="container">
+    <div id="loginPage" class="login-page">
+        <h1>请输入名字并上传头像</h1>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="输入名字" required><br>
+            <input type="file" id="avatar" accept="image/*" required><br>
+            <button type="submit">登录</button>
+        </form>
+    </div>
+
+    <div id="appPage" class="app-page" style="display:none;">
         <h1>今天的冠军是谁？</h1>
-        <div id="childList" class="child-list">
-            <!-- 孩子头像和名字将动态生成 -->
-        </div>
+        <div id="childList" class="child-list"></div>
         <div id="currentTimer" class="timer">
             <p>当前计时：</p>
             <span id="timerDisplay">00:00</span>
         </div>
-        <button id="endDay" class="end-day-btn">结束今天的计时</button>
-        <div id="winner" class="winner">
-            <h2>今天的冠军:</h2>
-            <p id="winnerName">没有冠军</p>
-            <p id="winnerTime">00:00</p>
-        </div>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>

@@ -1,15 +1,17 @@
-const childList = document.getElementById('childList');
 const loginPage = document.getElementById('loginPage');
 const appPage = document.getElementById('appPage');
 const loginForm = document.getElementById('loginForm');
 const usernameInput = document.getElementById('username');
 const avatarInput = document.getElementById('avatar');
+const addCharacterBtn = document.getElementById('addCharacterBtn');
+const confirmBtn = document.getElementById('confirmBtn');
+const characterList = document.getElementById('characterList');
+const childList = document.getElementById('childList');
 
-let children = JSON.parse(localStorage.getItem('children')) || [];
+let children = [];
 
-loginForm.addEventListener('submit', function(e) {
-    e.preventDefault(); // 防止表单刷新页面
-
+// 添加人物
+addCharacterBtn.addEventListener('click', function() {
     const username = usernameInput.value;
     const avatarFile = avatarInput.files[0];
     
@@ -19,27 +21,34 @@ loginForm.addEventListener('submit', function(e) {
             const avatarUrl = reader.result;
             const child = { name: username, avatar: avatarUrl };
             children.push(child);
-            localStorage.setItem('children', JSON.stringify(children));
 
-            console.log('头像和名字保存成功，跳转到应用页面');
+            // 添加完一个人物后，展示在角色列表
+            const childElement = document.createElement('div');
+            childElement.classList.add('child-item');
+            childElement.innerHTML = `
+                <img src="${child.avatar}" alt="${child.name}">
+                <p>${child.name}</p>
+            `;
+            characterList.appendChild(childElement);
 
-            // 隐藏登录页面，显示应用页面
-            loginPage.style.display = 'none';
-            appPage.style.display = 'block';
-
-            // 渲染孩子的头像和名字
-            renderChildren();
+            // 显示确认按钮
+            confirmBtn.style.display = 'block';
         };
-        reader.onerror = function() {
-            console.error('文件读取失败');
-        };
-        reader.readAsDataURL(avatarFile); // 读取文件
-    } else {
-        console.error('请输入名字和上传头像');
+        reader.readAsDataURL(avatarFile);
     }
 });
 
-// 渲染所有孩子的信息
+// 确认按钮，跳转到计时器页面
+confirmBtn.addEventListener('click', function() {
+    // 隐藏登录页面，显示计时器页面
+    loginPage.style.display = 'none';
+    appPage.style.display = 'block';
+
+    // 渲染计时器页面上的所有角色
+    renderChildren();
+});
+
+// 渲染角色
 function renderChildren() {
     childList.innerHTML = '';
     children.forEach((child, index) => {
@@ -54,10 +63,11 @@ function renderChildren() {
     });
 }
 
-// 点击头像后启动计时器（功能和之前相同）
+// 点击头像后启动计时器
 function startTimer(index) {
-    console.log('计时器功能正在执行', index);
-    // 处理计时器的逻辑
+    // 在这里加入计时器逻辑，点击头像时显示皇冠并开始计时
+    const selectedChild = children[index];
+    const crown = childList.children[index].querySelector('.crown');
+    crown.style.display = 'block';
+    console.log(`${selectedChild.name} 开始计时`);
 }
-
-renderChildren();

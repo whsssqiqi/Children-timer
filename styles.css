@@ -83,10 +83,10 @@ button:hover {
 }
 
 .character-item img {
-    width: 100px;
-    height: 100px;
+    width: 80px;  /* Adjusted size */
+    height: 80px;  /* Adjusted size */
     border-radius: 50%;
-    object-fit: cover;
+    object-fit: cover;  /* Ensures the image fills the circle without distortion */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 

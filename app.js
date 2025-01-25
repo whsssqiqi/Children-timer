@@ -1,11 +1,9 @@
 const loginPage = document.getElementById('loginPage');
 const appPage = document.getElementById('appPage');
-const loginForm = document.getElementById('loginForm');
 const usernameInput = document.getElementById('username');
 const avatarInput = document.getElementById('avatar');
 const addCharacterBtn = document.getElementById('addCharacterBtn');
 const confirmBtn = document.getElementById('confirmBtn');
-const characterList = document.getElementById('characterList');
 const childList = document.getElementById('childList');
 const timerDisplay = document.getElementById("timerDisplay");
 const endOfDayBtn = document.getElementById('endOfDayBtn');
@@ -15,21 +13,19 @@ const championName = document.getElementById('championName');
 const resetBtn = document.getElementById('resetBtn');
 
 let children = JSON.parse(localStorage.getItem('children')) || [];
-let timers = []; // 存储每个角色的计时
 let activeTimers = []; // 存储每个角色的计时器
 let timeStates = []; // 存储每个角色的时间状态（暂停时的时间）
 
 // 加载并显示已存储的角色
 function loadChildren() {
     if (children.length > 0) {
-        // 如果有角色数据，直接跳到计时器页面
         loginPage.style.display = 'none';
         appPage.style.display = 'block';
         renderChildren();
     }
 }
 
-// 在计时器页面渲染角色
+// 渲染角色列表
 function renderChildren() {
     childList.innerHTML = '';
     children.forEach((child, index) => {
@@ -39,13 +35,22 @@ function renderChildren() {
             <img src="${child.avatar}" alt="${child.name}" onclick="startTimer(${index})">
             <p>${child.name}</p>
             <button class="delete-btn" onclick="deleteCharacter(${index})">×</button>
+            <img class="crown" src="icon.png" style="display:none;" />
         `;
         childList.appendChild(childElement);
     });
 }
 
-// 添加人物
+// 点击加号按钮时显示角色输入框
 addCharacterBtn.addEventListener('click', function() {
+    usernameInput.value = '';
+    avatarInput.value = '';
+    loginPage.style.display = 'block';
+    appPage.style.display = 'none';
+});
+
+// 点击确认按钮，跳转到计时器页面
+confirmBtn.addEventListener('click', function() {
     const username = usernameInput.value;
     const avatarFile = avatarInput.files[0];
     
@@ -56,27 +61,13 @@ addCharacterBtn.addEventListener('click', function() {
             const child = { name: username, avatar: avatarUrl };
             children.push(child);
             localStorage.setItem('children', JSON.stringify(children)); // 保存到localStorage
-
-            const childElement = document.createElement('div');
-            childElement.classList.add('character-item');
-            childElement.innerHTML = `
-                <img src="${child.avatar}" alt="${child.name}">
-                <p>${child.name}</p>
-                <button class="delete-btn" onclick="deleteCharacter(${children.length - 1})">×</button>
-            `;
-            characterList.appendChild(childElement);
-
-            confirmBtn.style.display = 'block';
+            renderChildren();  // 渲染角色列表
+            confirmBtn.style.display = 'none'; // 隐藏确认按钮
+            loginPage.style.display = 'none'; // 隐藏登录界面
+            appPage.style.display = 'block';  // 显示计时器页面
         };
         reader.readAsDataURL(avatarFile);
     }
-});
-
-// 确认按钮，跳转到计时器页面
-confirmBtn.addEventListener('click', function() {
-    loginPage.style.display = 'none';
-    appPage.style.display = 'block';
-    renderChildren();
 });
 
 // 删除成员
@@ -95,10 +86,10 @@ function startTimer(index) {
     }
 
     const allCrowns = document.querySelectorAll('.crown');
-    allCrowns.forEach(crown => crown.style.display = 'none');
+    allCrowns.forEach(crown => crown.style.display = 'none'); // 隐藏其他皇冠
 
     const crown = childList.children[index].querySelector('.crown');
-    crown.style.display = 'block';
+    crown.style.display = 'block'; // 显示当前头像的皇冠
 
     let time = timeStates[index] || 0; // 如果之前有暂停时间则继续
     activeTimers[index] = setInterval(function() {

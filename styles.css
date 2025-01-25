@@ -121,10 +121,11 @@ button:hover {
     background-color: darkred;
 }
 
+/* Adjust the crown position */
 .crown {
     position: absolute;
-    top: -15px;
-    left: 30px;
+    top: -18px; /* Adjusting position above the avatar */
+    left: 30px; /* Aligning the crown on top of the avatar */
     width: 30px;
     display: none;
 }

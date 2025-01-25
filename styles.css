@@ -96,6 +96,25 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.delete-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: darkred;
+}
+
+/* Adjust the crown position */
 .crown {
     position: absolute;
     top: -18px; /* Adjusting position above the avatar */

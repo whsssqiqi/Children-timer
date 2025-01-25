@@ -8,15 +8,20 @@
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
+    <!-- 登录页面 -->
     <div id="loginPage" class="login-page">
         <h1>请输入名字并上传头像</h1>
         <form id="loginForm">
             <input type="text" id="username" placeholder="输入名字" required><br>
             <input type="file" id="avatar" accept="image/*" required><br>
-            <button type="submit">登录</button>
+            <button type="submit">添加人物</button>
         </form>
+        <button id="confirmBtn" style="display:none;">确认添加并开始</button>
+        <div id="characterList"></div>
+        <button id="addCharacterBtn" class="add-character-btn">+</button>
     </div>
 
+    <!-- 计时器页面 -->
     <div id="appPage" class="app-page" style="display:none;">
         <h1>今天的冠军是谁？</h1>
         <div id="childList" class="child-list"></div>

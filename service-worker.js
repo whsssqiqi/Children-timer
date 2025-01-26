@@ -1,5 +1,5 @@
 // service-worker.js (最简缓存)
-const CACHE_NAME = 'kids-timer-v1';
+const CACHE_NAME = 'kids-timer-v2';
 const urlsToCache = [
   './',
   './index.html',

@@ -9,8 +9,16 @@ h1 {
   color: #333;
 }
 
-#children-list, #avatars-container {
+#children-list {
   margin: 20px;
+}
+
+#children-list .child-entry {
+  margin-bottom: 10px;
+}
+
+.child-entry input {
+  margin: 5px;
 }
 
 #login-page button {
@@ -23,6 +31,10 @@ h1 {
 
 #login-page button:hover {
   background-color: #45a049;
+}
+
+#avatars-container {
+  margin: 20px;
 }
 
 .avatar {

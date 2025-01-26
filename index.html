@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>孩子计时器</title>
-  
-  <!-- 可选：PWA & iOS 全屏配置 -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- iOS 主屏图标 (若需要) -->
-  <link rel="apple-touch-icon" href="icon.png">
-  <!-- Manifest (若需 PWA) -->
-  <link rel="manifest" href="manifest.json">
+  <!-- iOS 全屏配置，可选 -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-  <!-- 字体示例 (可用 Google Fonts 等) -->
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <!-- iOS 主屏图标（可选） -->
+  <link rel="apple-touch-icon" href="icon.png" />
+
+  <!-- PWA manifest（可选） -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- 引入可爱字体 -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-
   <!-- 登录页面 -->
   <div id="login-page">
     <div class="top-bar">
@@ -27,9 +32,12 @@
     </div>
 
     <div class="page-content">
-      <h1>添加孩子</h1>
+      <h1>添加 / 修改 孩子</h1>
+
+      <!-- 孩子列表 -->
       <div id="children-list"></div>
 
+      <!-- 按钮 -->
       <div class="btn-group">
         <button id="add-child-button" class="big-btn">+ 添加</button>
         <button id="start-timer-button" class="big-btn">开始计时</button>
@@ -41,31 +49,41 @@
   <div id="timer-page" style="display: none;">
     <div class="top-bar">
       <div class="app-title">Kids Timer</div>
-      <button id="back-to-login" class="menu-btn">返回</button>
+      <div>
+        <!-- 返回主界面 -->
+        <button id="back-to-login" class="menu-btn">返回</button>
+        <!-- 清零按钮（可选）-->
+        <button id="clear-data-btn" class="menu-btn" style="margin-left:10px;">清零</button>
+      </div>
     </div>
 
     <div class="page-content">
+      <!-- 卡片列表 -->
       <div id="avatars-container" class="card-list"></div>
-      
-      <!-- 当前计时显示 -->
-      <div id="current-timer" class="current-timer-label">当前计时: 0秒</div>
 
-      <!-- 所有孩子总时长 -->
+      <!-- 当前计时显示 -->
+      <div id="current-timer" class="current-timer-label">
+        当前计时: 0秒
+      </div>
+
+      <!-- 显示所有孩子总时长，并带“自定义”按钮 -->
       <div id="summary-list" class="summary-area"></div>
     </div>
   </div>
 
+  <!-- 主逻辑脚本 -->
   <script src="app.js"></script>
 
-  <!-- 可选：Service Worker 注册（若需离线功能） -->
+  <!-- 可选: 注册 Service Worker -->
   <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('./service-worker.js')
-        .then(() => console.log('SW registered'))
-        .catch(err => console.log('SW failed:', err));
-    });
-  }
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker
+          .register("./service-worker.js")
+          .then(() => console.log("Service Worker 注册成功"))
+          .catch((err) => console.log("Service Worker 注册失败:", err));
+      });
+    }
   </script>
 </body>
 </html>

@@ -9,12 +9,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- 应用图标 -->
+  <!-- 应用图标 (iOS 添加到主屏幕时使用) -->
   <link rel="apple-touch-icon" href="icon.png">
-  <!-- PWA Manifest -->
+
+  <!-- Manifest (PWA) -->
   <link rel="manifest" href="manifest.json">
   
-  <!-- 引入可爱的字体 (Google Fonts) -->
+  <!-- 可爱/粗体的字体 (可换成系统字体) -->
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
 
   <!-- 引入 CSS -->
@@ -29,9 +30,9 @@
     <!-- 孩子信息列表容器 -->
     <div id="children-list"></div>
 
-    <!-- 添加孩子 & 开始按钮 -->
-    <button id="add-child-button" class="large-btn">添加孩子</button>
-    <button id="start-timer-button" class="large-btn">开始计时器</button>
+    <!-- 按钮 -->
+    <button id="add-child-button" class="large-btn red-btn">添加孩子</button>
+    <button id="start-timer-button" class="large-btn red-btn">开始计时器</button>
   </div>
 
   <!-- 计时器界面 -->
@@ -45,17 +46,17 @@
     <h2>所有孩子的总时长</h2>
     <div id="summary-list"></div>
 
-    <button id="back-to-login" class="large-btn">返回登录页面</button>
+    <button id="back-to-login" class="large-btn red-btn">返回登录页面</button>
   </div>
 
-  <!-- 引入 JS -->
+  <!-- 引入主逻辑 JS -->
   <script src="app.js"></script>
+
+  <!-- 可选：注册 Service Worker（如不需离线可删除此段） -->
   <script>
-    // 注册 Service Worker (如不需离线功能，可删除此段)
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
-        navigator.serviceWorker
-          .register('./service-worker.js')
+        navigator.serviceWorker.register('./service-worker.js')
           .then(() => console.log('Service Worker 注册成功'))
           .catch(err => console.log('Service Worker 注册失败:', err));
       });

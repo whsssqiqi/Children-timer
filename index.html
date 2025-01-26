@@ -5,62 +5,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>孩子计时器</title>
   
-  <!-- 让 iOS Safari 支持全屏显示（PWA） -->
+  <!-- 可选：PWA & iOS 全屏配置 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- 应用图标 (iOS 添加到主屏幕时使用) -->
+  <!-- iOS 主屏图标 (若需要) -->
   <link rel="apple-touch-icon" href="icon.png">
-
-  <!-- Manifest (PWA) -->
+  <!-- Manifest (若需 PWA) -->
   <link rel="manifest" href="manifest.json">
-  
-  <!-- 可爱/粗体的字体 (可换成系统字体) -->
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
 
-  <!-- 引入 CSS -->
+  <!-- 字体示例 (可用 Google Fonts 等) -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <!-- 登录界面 -->
+  <!-- 登录页面 -->
   <div id="login-page">
-    <h1>请输入孩子的姓名和头像</h1>
-    
-    <!-- 孩子信息列表容器 -->
-    <div id="children-list"></div>
+    <div class="top-bar">
+      <div class="app-title">Kids Timer</div>
+    </div>
 
-    <!-- 按钮 -->
-    <button id="add-child-button" class="large-btn red-btn">添加孩子</button>
-    <button id="start-timer-button" class="large-btn red-btn">开始计时器</button>
+    <div class="page-content">
+      <h1>添加孩子</h1>
+      <div id="children-list"></div>
+
+      <div class="btn-group">
+        <button id="add-child-button" class="big-btn">+ 添加</button>
+        <button id="start-timer-button" class="big-btn">开始计时</button>
+      </div>
+    </div>
   </div>
 
   <!-- 计时器界面 -->
   <div id="timer-page" style="display: none;">
-    <h1>点击头像争夺皇冠</h1>
-    <div id="avatars-container"></div>
+    <div class="top-bar">
+      <div class="app-title">Kids Timer</div>
+      <button id="back-to-login" class="menu-btn">返回</button>
+    </div>
 
-    <div id="current-timer">当前计时: 0秒</div>
+    <div class="page-content">
+      <div id="avatars-container" class="card-list"></div>
+      
+      <!-- 当前计时显示 -->
+      <div id="current-timer" class="current-timer-label">当前计时: 0秒</div>
 
-    <!-- 所有孩子的计时汇总 -->
-    <h2>所有孩子的总时长</h2>
-    <div id="summary-list"></div>
-
-    <button id="back-to-login" class="large-btn red-btn">返回登录页面</button>
+      <!-- 所有孩子总时长 -->
+      <div id="summary-list" class="summary-area"></div>
+    </div>
   </div>
 
-  <!-- 引入主逻辑 JS -->
   <script src="app.js"></script>
 
-  <!-- 可选：注册 Service Worker（如不需离线可删除此段） -->
+  <!-- 可选：Service Worker 注册（若需离线功能） -->
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('./service-worker.js')
-          .then(() => console.log('Service Worker 注册成功'))
-          .catch(err => console.log('Service Worker 注册失败:', err));
-      });
-    }
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(() => console.log('SW registered'))
+        .catch(err => console.log('SW failed:', err));
+    });
+  }
   </script>
 </body>
 </html>

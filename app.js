@@ -1,7 +1,7 @@
-let children = [];          // { name: string, avatar: string, startTime?: number }
-let timers = {};            // { [name: string]: number }  => 累计秒数
-let activeChild = null;     // 当前在计时的孩子对象
-let intervalId = null;      // setInterval 的句柄
+let children = [];        
+let timers = {};          
+let activeChild = null;   
+let intervalId = null;    
 
 window.addEventListener('load', () => {
   loadDataFromStorage();
@@ -14,33 +14,29 @@ document.getElementById('start-timer-button').addEventListener('click', nextPage
 document.getElementById('back-to-login').addEventListener('click', backToLogin);
 
 /***************************************************
- * 登录页面相关
+ * 登录页：动态添加孩子表单
  ***************************************************/
 function addChildForm() {
   const container = document.getElementById('children-list');
-  
+
   const childEntry = document.createElement('div');
   childEntry.className = 'child-entry';
-  
-  // 1. 孩子姓名
+
   const nameInput = document.createElement('input');
   nameInput.type = 'text';
   nameInput.placeholder = '孩子的姓名';
   childEntry.appendChild(nameInput);
 
-  // 2. 头像文件
   const fileInput = document.createElement('input');
   fileInput.type = 'file';
   fileInput.accept = 'image/*';
   childEntry.appendChild(fileInput);
 
-  // 3. 头像URL
   const urlInput = document.createElement('input');
   urlInput.type = 'text';
   urlInput.placeholder = '或输入头像URL';
   childEntry.appendChild(urlInput);
 
-  // 4. 删除按钮
   const deleteBtn = document.createElement('button');
   deleteBtn.className = 'delete-btn';
   deleteBtn.textContent = '删除';
@@ -50,15 +46,28 @@ function addChildForm() {
   container.appendChild(childEntry);
 }
 
-/**
- * 切换到计时器页面：
- *  - 读取表单数据并初始化
- */
+/***************************************************
+ * 把上传的File转为Base64
+ ***************************************************/
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.onerror = err => reject(err);
+    reader.readAsDataURL(file);
+  });
+}
+
+/***************************************************
+ * 点击“开始计时” => 切换到计时器页面
+ ***************************************************/
 function nextPage() {
   children = [];
   timers = {};
 
   const childEntries = document.querySelectorAll('#children-list .child-entry');
+  const readPromises = [];
+
   childEntries.forEach(entry => {
     const [nameInput, fileInput, urlInput] = entry.querySelectorAll('input');
     const name = nameInput.value.trim();
@@ -67,35 +76,43 @@ function nextPage() {
 
     if (!name) return;
 
-    let finalAvatar = '';
     if (avatarFile) {
-      finalAvatar = URL.createObjectURL(avatarFile);
+      const p = readFileAsDataURL(avatarFile).then(base64 => {
+        children.push({ name, avatar: base64 });
+        timers[name] = 0;
+      });
+      readPromises.push(p);
     } else if (avatarUrl) {
-      finalAvatar = avatarUrl;
+      children.push({ name, avatar: avatarUrl });
+      timers[name] = 0;
     } else {
-      finalAvatar = 'https://via.placeholder.com/90?text=No+Image';
+      children.push({ name, avatar: 'https://via.placeholder.com/90?text=No+Image' });
+      timers[name] = 0;
     }
-
-    children.push({ name, avatar: finalAvatar });
-    timers[name] = 0;
   });
 
-  if (children.length === 0) {
+  if (childEntries.length === 0) {
     alert('请至少添加一个孩子的信息');
     return;
   }
 
-  saveDataToStorage();
+  Promise.all(readPromises).then(() => {
+    if (children.length === 0) {
+      alert('请至少填写孩子的姓名');
+      return;
+    }
 
-  document.getElementById('login-page').style.display = 'none';
-  document.getElementById('timer-page').style.display = 'block';
+    saveDataToStorage();
 
-  loadChildrenIntoTimerPage();
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('timer-page').style.display = 'block';
+    loadChildrenIntoTimerPage();
+  });
 }
 
-/**
- * 从 localStorage 恢复后渲染登录表单
- */
+/***************************************************
+ * 显示登录页面时，还原表单
+ ***************************************************/
 function renderLoginPage() {
   const container = document.getElementById('children-list');
   container.innerHTML = '';
@@ -120,7 +137,9 @@ function renderLoginPage() {
       const urlInput = document.createElement('input');
       urlInput.type = 'text';
       urlInput.placeholder = '或输入头像URL';
-      urlInput.value = child.avatar.startsWith('blob:') ? '' : child.avatar;
+      if (!child.avatar.startsWith('data:')) {
+        urlInput.value = child.avatar;
+      }
       childEntry.appendChild(urlInput);
 
       const deleteBtn = document.createElement('button');
@@ -134,9 +153,9 @@ function renderLoginPage() {
   }
 }
 
-/**
- * 返回登录页面
- */
+/***************************************************
+ * 返回登录页
+ ***************************************************/
 function backToLogin() {
   if (intervalId) {
     clearInterval(intervalId);
@@ -151,43 +170,52 @@ function backToLogin() {
 }
 
 /***************************************************
- * 计时器页面相关
+ * 计时器页面：渲染孩子卡片
  ***************************************************/
 function loadChildrenIntoTimerPage() {
   const container = document.getElementById('avatars-container');
   container.innerHTML = '';
 
   children.forEach(child => {
-    const avatarDiv = document.createElement('div');
-    avatarDiv.className = 'avatar';
-    avatarDiv.onclick = () => startTimer(child);
+    // 卡片容器
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'avatar-card';
+    cardDiv.onclick = () => startTimer(child);
 
+    // 圆形头像
+    const circleDiv = document.createElement('div');
+    circleDiv.className = 'avatar-circle';
     const img = document.createElement('img');
     img.src = child.avatar;
-    avatarDiv.appendChild(img);
+    circleDiv.appendChild(img);
 
-    // 创建小皇冠
+    // 孩子名字
+    const nameLabel = document.createElement('div');
+    nameLabel.className = 'card-name';
+    nameLabel.textContent = child.name;
+
+    // 皇冠
     const crownDiv = document.createElement('div');
     crownDiv.className = 'crown';
-
-    // 用 icon.png 作为皇冠图标
     const crownImg = document.createElement('img');
     crownImg.src = 'icon.png'; 
     crownDiv.appendChild(crownImg);
 
-    avatarDiv.appendChild(crownDiv);
+    // 组装
+    cardDiv.appendChild(circleDiv);
+    cardDiv.appendChild(nameLabel);
+    cardDiv.appendChild(crownDiv);
 
-    container.appendChild(avatarDiv);
+    container.appendChild(cardDiv);
   });
 
   updateSummaryList();
 }
 
-/**
- * 点击头像，开始/切换计时
- */
+/***************************************************
+ * 点击头像 => 切换计时
+ ***************************************************/
 function startTimer(child) {
-  // 如果重复点击同一个孩子，忽略
   if (activeChild && activeChild.name === child.name) return;
 
   if (activeChild) {
@@ -208,16 +236,16 @@ function startTimer(child) {
   saveDataToStorage();
 }
 
-/**
- * 更新皇冠显示：只给 activeChild 显示
- */
+/***************************************************
+ * 显示/隐藏皇冠
+ ***************************************************/
 function updateCrownDisplay() {
   const container = document.getElementById('avatars-container');
-  const avatarDivs = container.querySelectorAll('.avatar');
+  const cards = container.querySelectorAll('.avatar-card');
 
-  avatarDivs.forEach((avatarDiv, index) => {
-    const crown = avatarDiv.querySelector('.crown');
+  cards.forEach((card, index) => {
     const child = children[index];
+    const crown = card.querySelector('.crown');
     if (activeChild && child.name === activeChild.name) {
       crown.style.display = 'block';
     } else {
@@ -228,9 +256,9 @@ function updateCrownDisplay() {
   updateSummaryList();
 }
 
-/**
+/***************************************************
  * 更新所有孩子的总时长
- */
+ ***************************************************/
 function updateSummaryList() {
   const summaryContainer = document.getElementById('summary-list');
   summaryContainer.innerHTML = '';
@@ -242,7 +270,7 @@ function updateSummaryList() {
       totalTime += elapsed;
     }
     const p = document.createElement('p');
-    p.textContent = `${child.name}：${totalTime} 秒`;
+    p.textContent = `${child.name}: ${totalTime} 秒`;
     summaryContainer.appendChild(p);
   });
 }
@@ -274,7 +302,7 @@ function loadDataFromStorage() {
         activeChild.startTime = data.activeStartTime;
       }
     }
-  } catch (err) {
-    console.error('读取 localStorage 出错:', err);
+  } catch (e) {
+    console.error('读取存储失败', e);
   }
 }

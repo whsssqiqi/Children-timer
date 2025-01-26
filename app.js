@@ -1,129 +1,83 @@
-const loginPage = document.getElementById('loginPage');
-const appPage = document.getElementById('appPage');
-const loginForm = document.getElementById('loginForm');
-const usernameInput = document.getElementById('username');
-const avatarInput = document.getElementById('avatar');
-const addCharacterBtn = document.getElementById('addCharacterBtn');
-const confirmBtn = document.getElementById('confirmBtn');
-const characterList = document.getElementById('characterList');
-const childList = document.getElementById('childList');
-const timerDisplay = document.getElementById("timerDisplay");
-const endOfDayBtn = document.getElementById('endOfDayBtn');
-const championDisplay = document.getElementById('championDisplay');
-const championAvatar = document.getElementById('championAvatar');
-const championName = document.getElementById('championName');
-const resetBtn = document.getElementById('resetBtn');
+let children = [];  // 存储孩子的姓名和头像
+let activeChild = null;  // 当前计时的孩子
+let timers = {};  // 存储每个孩子的计时器
+let crownTime = {};  // 存储每个孩子持有皇冠的时间
 
-let children = JSON.parse(localStorage.getItem('children')) || [];
-let timers = [];
-let activeTimers = [];
+function nextPage() {
+  // 切换到计时器页面
+  document.getElementById('login-page').style.display = 'none';
+  document.getElementById('timer-page').style.display = 'block';
+  
+  // 初始化计时器界面
+  loadChildren();
+}
 
-loadChildren();
+function loadChildren() {
+  // 假设数据是硬编码的，实际可以动态获取
+  children = [
+    { name: "孩子1", avatar: "https://placekitten.com/80/80" },
+    { name: "孩子2", avatar: "https://placekitten.com/81/81" }
+  ];
 
-// 添加人物
-addCharacterBtn.addEventListener('click', function() {
-    const username = usernameInput.value;
-    const avatarFile = avatarInput.files[0];
+  const container = document.getElementById('avatars-container');
+  container.innerHTML = '';
+  
+  children.forEach(child => {
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.onclick = () => startTimer(child);
     
-    if (username && avatarFile) {
-        const reader = new FileReader();
-        reader.onload = function() {
-            const avatarUrl = reader.result;
-            const child = { name: username, avatar: avatarUrl };
-            children.push(child);
-            localStorage.setItem('children', JSON.stringify(children)); // 保存到localStorage
+    const img = document.createElement('img');
+    img.src = child.avatar;
+    avatar.appendChild(img);
 
-            const childElement = document.createElement('div');
-            childElement.classList.add('character-item');
-            childElement.innerHTML = `
-                <img src="${child.avatar}" alt="${child.name}">
-                <p>${child.name}</p>
-                <button class="delete-btn" onclick="deleteCharacter(${children.length - 1})">×</button>
-            `;
-            characterList.appendChild(childElement);
-
-            confirmBtn.style.display = 'block';
-        };
-        reader.readAsDataURL(avatarFile);
-    }
-});
-
-// 确认按钮，跳转到计时器页面
-confirmBtn.addEventListener('click', function() {
-    loginPage.style.display = 'none';
-    appPage.style.display = 'block';
-    renderChildren();
-});
-
-// 渲染角色
-function renderChildren() {
-    childList.innerHTML = '';
-    children.forEach((child, index) => {
-        const childElement = document.createElement('div');
-        childElement.classList.add('character-item');
-        childElement.innerHTML = `
-            <img src="${child.avatar}" alt="${child.name}" onclick="startTimer(${index})">
-            <p>${child.name}</p>
-            <button class="delete-btn" onclick="deleteCharacter(${index})">×</button>
-        `;
-        childList.appendChild(childElement);
-    });
+    const crown = document.createElement('div');
+    crown.className = 'crown';
+    avatar.appendChild(crown);
+    
+    container.appendChild(avatar);
+    
+    timers[child.name] = 0;
+    crownTime[child.name] = 0;
+  });
 }
 
-// 删除成员
-function deleteCharacter(index) {
-    children.splice(index, 1);
-    localStorage.setItem('children', JSON.stringify(children)); // 更新localStorage
-    renderChildren();
+function startTimer(child) {
+  if (activeChild !== null) {
+    // 暂停当前计时
+    timers[activeChild.name] += Math.floor((Date.now() - timers[activeChild.name]) / 1000);
+  }
+
+  // 设置新孩子为当前计时
+  activeChild = child;
+  timers[child.name] = Date.now();
+
+  // 更新界面
+  updateCrownDisplay();
 }
 
-// 点击头像后启动计时器
-function startTimer(index) {
-    if (activeTimers[index]) {
-        clearInterval(activeTimers[index].timer);
+function updateCrownDisplay() {
+  const container = document.getElementById('avatars-container');
+  const childrenAvatars = container.getElementsByClassName('avatar');
+  
+  for (let avatar of childrenAvatars) {
+    const crown = avatar.querySelector('.crown');
+    const childName = avatar.querySelector('img').alt;
+    
+    if (childName === activeChild.name) {
+      crown.style.display = 'block';
+      startCountingTime(childName);
+    } else {
+      crown.style.display = 'none';
     }
-
-    const allCrowns = document.querySelectorAll('.crown');
-    allCrowns.forEach(crown => crown.style.display = 'none');
-
-    const crown = childList.children[index].querySelector('.crown');
-    crown.style.display = 'block';
-
-    let time = timers[index] || 0;
-    activeTimers[index] = { timer: setInterval(function() {
-        time++;
-        timers[index] = time;
-        const minutes = Math.floor(time / 60);
-        const seconds = time % 60;
-        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }, 1000) };
+  }
 }
 
-// 结算今天的冠军
-endOfDayBtn.addEventListener('click', function() {
-    let longestTime = 0;
-    let championIndex = -1;
+function startCountingTime(childName) {
+  setInterval(() => {
+    const currentTime = Math.floor((Date.now() - timers[childName]) / 1000);
+    document.getElementById('current-timer').textContent = `当前计时: ${currentTime}秒`;
 
-    timers.forEach((time, index) => {
-        if (time > longestTime) {
-            longestTime = time;
-            championIndex = index;
-        }
-    });
-
-    if (championIndex >= 0) {
-        championAvatar.src = children[championIndex].avatar;
-        championName.textContent = children[championIndex].name;
-        championDisplay.style.display = 'block';
-    }
-});
-
-// 重置按钮
-resetBtn.addEventListener('click', function() {
-    loginPage.style.display = 'block';
-    appPage.style.display = 'none';
-    timers = [];
-    activeTimers = [];
-    championDisplay.style.display = 'none';
-    timerDisplay.textContent = '00:00';
-});
+    crownTime[childName] = currentTime;
+  }, 1000);
+}

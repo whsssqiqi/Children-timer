@@ -1,76 +1,129 @@
-const children = [
-    { name: "小明", avatar: "https://via.placeholder.com/100/FF6347/FFFFFF?text=小明" },
-    { name: "小红", avatar: "https://via.placeholder.com/100/32CD32/FFFFFF?text=小红" },
-    { name: "小刚", avatar: "https://via.placeholder.com/100/1E90FF/FFFFFF?text=小刚" },
-];
+const loginPage = document.getElementById('loginPage');
+const appPage = document.getElementById('appPage');
+const loginForm = document.getElementById('loginForm');
+const usernameInput = document.getElementById('username');
+const avatarInput = document.getElementById('avatar');
+const addCharacterBtn = document.getElementById('addCharacterBtn');
+const confirmBtn = document.getElementById('confirmBtn');
+const characterList = document.getElementById('characterList');
+const childList = document.getElementById('childList');
+const timerDisplay = document.getElementById("timerDisplay");
+const endOfDayBtn = document.getElementById('endOfDayBtn');
+const championDisplay = document.getElementById('championDisplay');
+const championAvatar = document.getElementById('championAvatar');
+const championName = document.getElementById('championName');
+const resetBtn = document.getElementById('resetBtn');
 
-let currentChild = null;
-let timers = {};
-let currentTimerInterval = null;
-let winner = { name: "", time: 0 };
+let children = JSON.parse(localStorage.getItem('children')) || [];
+let timers = [];
+let activeTimers = [];
 
-// 页面加载时，动态创建孩子头像
-function loadChildren() {
-    const childList = document.getElementById("childList");
+loadChildren();
+
+// 添加人物
+addCharacterBtn.addEventListener('click', function() {
+    const username = usernameInput.value;
+    const avatarFile = avatarInput.files[0];
+    
+    if (username && avatarFile) {
+        const reader = new FileReader();
+        reader.onload = function() {
+            const avatarUrl = reader.result;
+            const child = { name: username, avatar: avatarUrl };
+            children.push(child);
+            localStorage.setItem('children', JSON.stringify(children)); // 保存到localStorage
+
+            const childElement = document.createElement('div');
+            childElement.classList.add('character-item');
+            childElement.innerHTML = `
+                <img src="${child.avatar}" alt="${child.name}">
+                <p>${child.name}</p>
+                <button class="delete-btn" onclick="deleteCharacter(${children.length - 1})">×</button>
+            `;
+            characterList.appendChild(childElement);
+
+            confirmBtn.style.display = 'block';
+        };
+        reader.readAsDataURL(avatarFile);
+    }
+});
+
+// 确认按钮，跳转到计时器页面
+confirmBtn.addEventListener('click', function() {
+    loginPage.style.display = 'none';
+    appPage.style.display = 'block';
+    renderChildren();
+});
+
+// 渲染角色
+function renderChildren() {
+    childList.innerHTML = '';
     children.forEach((child, index) => {
-        const childElement = document.createElement("div");
-        childElement.classList.add("child-item");
+        const childElement = document.createElement('div');
+        childElement.classList.add('character-item');
         childElement.innerHTML = `
             <img src="${child.avatar}" alt="${child.name}" onclick="startTimer(${index})">
-            <img class="crown" src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Gold_crown.svg" style="display:none;" />
+            <p>${child.name}</p>
+            <button class="delete-btn" onclick="deleteCharacter(${index})">×</button>
         `;
         childList.appendChild(childElement);
     });
 }
 
-// 启动计时器
-function startTimer(index) {
-    // 停止当前计时器
-    if (currentTimerInterval) {
-        clearInterval(currentTimerInterval);
-    }
-
-    // 切换皇冠
-    const currentChildElement = document.querySelectorAll('.child-item')[currentChild]?.querySelector('.crown');
-    if (currentChildElement) {
-        currentChildElement.style.display = 'none';
-    }
-
-    currentChild = index;
-    const newChildElement = document.querySelectorAll('.child-item')[currentChild]?.querySelector('.crown');
-    newChildElement.style.display = 'block';
-
-    // 启动新的计时器
-    timers[currentChild] = timers[currentChild] || 0;
-    currentTimerInterval = setInterval(() => {
-        timers[currentChild]++;
-        const minutes = Math.floor(timers[currentChild] / 60);
-        const seconds = timers[currentChild] % 60;
-        document.getElementById("timerDisplay").textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }, 1000);
+// 删除成员
+function deleteCharacter(index) {
+    children.splice(index, 1);
+    localStorage.setItem('children', JSON.stringify(children)); // 更新localStorage
+    renderChildren();
 }
 
-// 结束当天的计时，统计冠军
-document.getElementById("endDay").addEventListener("click", function() {
-    // 找出持有最多时间的孩子
-    let maxTime = 0;
-    let winnerIndex = -1;
-    for (let i = 0; i < children.length; i++) {
-        if (timers[i] > maxTime) {
-            maxTime = timers[i];
-            winnerIndex = i;
-        }
+// 点击头像后启动计时器
+function startTimer(index) {
+    if (activeTimers[index]) {
+        clearInterval(activeTimers[index].timer);
     }
 
-    if (winnerIndex !== -1) {
-        winner.name = children[winnerIndex].name;
-        winner.time = maxTime;
-        const minutes = Math.floor(winner.time / 60);
-        const seconds = winner.time % 60;
-        document.getElementById("winnerName").textContent = winner.name;
-        document.getElementById("winnerTime").textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    const allCrowns = document.querySelectorAll('.crown');
+    allCrowns.forEach(crown => crown.style.display = 'none');
+
+    const crown = childList.children[index].querySelector('.crown');
+    crown.style.display = 'block';
+
+    let time = timers[index] || 0;
+    activeTimers[index] = { timer: setInterval(function() {
+        time++;
+        timers[index] = time;
+        const minutes = Math.floor(time / 60);
+        const seconds = time % 60;
+        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }, 1000) };
+}
+
+// 结算今天的冠军
+endOfDayBtn.addEventListener('click', function() {
+    let longestTime = 0;
+    let championIndex = -1;
+
+    timers.forEach((time, index) => {
+        if (time > longestTime) {
+            longestTime = time;
+            championIndex = index;
+        }
+    });
+
+    if (championIndex >= 0) {
+        championAvatar.src = children[championIndex].avatar;
+        championName.textContent = children[championIndex].name;
+        championDisplay.style.display = 'block';
     }
 });
 
-// 初始化页面
-loadChildren();
+// 重置按钮
+resetBtn.addEventListener('click', function() {
+    loginPage.style.display = 'block';
+    appPage.style.display = 'none';
+    timers = [];
+    activeTimers = [];
+    championDisplay.style.display = 'none';
+    timerDisplay.textContent = '00:00';
+});

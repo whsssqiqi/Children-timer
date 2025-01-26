@@ -1,32 +1,64 @@
-let children = [];  // 存储孩子的姓名和头像
-let activeChild = null;  // 当前计时的孩子
-let timers = {};  // 存储每个孩子的计时器
-let crownTime = {};  // 存储每个孩子持有皇冠的时间
+let children = []; // 存储孩子信息
+let activeChild = null; // 当前计时的孩子
+let timers = {}; // 每个孩子的计时器
+let interval = null; // 计时器的间隔函数
 
+// 添加一个孩子的输入表单
+function addChildForm() {
+  const container = document.getElementById('children-list');
+  const childEntry = document.createElement('div');
+  childEntry.className = 'child-entry';
+
+  // 姓名输入框
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.placeholder = '孩子的姓名';
+  childEntry.appendChild(nameInput);
+
+  // 头像输入框（URL方式）
+  const avatarInput = document.createElement('input');
+  avatarInput.type = 'text';
+  avatarInput.placeholder = '头像URL';
+  childEntry.appendChild(avatarInput);
+
+  container.appendChild(childEntry);
+}
+
+// 切换到计时器页面
 function nextPage() {
-  // 切换到计时器页面
+  const childEntries = document.querySelectorAll('.child-entry');
+
+  childEntries.forEach(entry => {
+    const name = entry.querySelector('input[type="text"]').value;
+    const avatar = entry.querySelector('input[type="text"]:nth-child(2)').value;
+
+    if (name && avatar) {
+      children.push({ name, avatar });
+      timers[name] = 0; // 初始化计时器为0
+    }
+  });
+
+  if (children.length === 0) {
+    alert('请至少添加一个孩子的信息');
+    return;
+  }
+
   document.getElementById('login-page').style.display = 'none';
   document.getElementById('timer-page').style.display = 'block';
-  
-  // 初始化计时器界面
+
   loadChildren();
 }
 
+// 加载孩子信息到计时器页面
 function loadChildren() {
-  // 假设数据是硬编码的，实际可以动态获取
-  children = [
-    { name: "孩子1", avatar: "https://placekitten.com/80/80" },
-    { name: "孩子2", avatar: "https://placekitten.com/81/81" }
-  ];
-
   const container = document.getElementById('avatars-container');
   container.innerHTML = '';
-  
+
   children.forEach(child => {
     const avatar = document.createElement('div');
     avatar.className = 'avatar';
     avatar.onclick = () => startTimer(child);
-    
+
     const img = document.createElement('img');
     img.src = child.avatar;
     avatar.appendChild(img);
@@ -34,50 +66,48 @@ function loadChildren() {
     const crown = document.createElement('div');
     crown.className = 'crown';
     avatar.appendChild(crown);
-    
+
     container.appendChild(avatar);
-    
-    timers[child.name] = 0;
-    crownTime[child.name] = 0;
   });
 }
 
+// 开始计时
 function startTimer(child) {
-  if (activeChild !== null) {
-    // 暂停当前计时
-    timers[activeChild.name] += Math.floor((Date.now() - timers[activeChild.name]) / 1000);
+  if (activeChild) {
+    // 停止当前孩子的计时
+    timers[activeChild.name] += Math.floor((Date.now() - activeChild.startTime) / 1000);
   }
 
-  // 设置新孩子为当前计时
   activeChild = child;
-  timers[child.name] = Date.now();
+  child.startTime = Date.now();
 
-  // 更新界面
   updateCrownDisplay();
 }
 
+// 更新皇冠显示
 function updateCrownDisplay() {
   const container = document.getElementById('avatars-container');
-  const childrenAvatars = container.getElementsByClassName('avatar');
-  
-  for (let avatar of childrenAvatars) {
+  const avatars = container.querySelectorAll('.avatar');
+
+  avatars.forEach((avatar, index) => {
     const crown = avatar.querySelector('.crown');
-    const childName = avatar.querySelector('img').alt;
-    
-    if (childName === activeChild.name) {
+    if (children[index] === activeChild) {
       crown.style.display = 'block';
-      startCountingTime(childName);
     } else {
       crown.style.display = 'none';
     }
-  }
-}
+  });
 
-function startCountingTime(childName) {
-  setInterval(() => {
-    const currentTime = Math.floor((Date.now() - timers[childName]) / 1000);
-    document.getElementById('current-timer').textContent = `当前计时: ${currentTime}秒`;
-
-    crownTime[childName] = currentTime;
+  // 开始实时计时
+  if (interval) clearInterval(interval);
+  interval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - activeChild.startTime) / 1000);
+    document.getElementById('current-timer').textContent = `当前计时: ${elapsed + timers[activeChild.name]}秒`;
   }, 1000);
 }
+
+// 初始化事件监听
+document.getElementById('add-child-button').addEventListener('click', addChildForm);
+
+// 默认添加一个输入框
+addChildForm();

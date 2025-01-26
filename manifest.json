@@ -1,10 +1,11 @@
+// manifest.json (简略示例)
 {
-  "name": "孩子计时器",
-  "short_name": "计时器",
+  "name": "Kids Timer",
+  "short_name": "Timer",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#111111",
-  "theme_color": "#D62B3C",
+  "background_color": "#ffffff",
+  "theme_color": "#fa5c54",
   "icons": [
     {
       "src": "icon.png",

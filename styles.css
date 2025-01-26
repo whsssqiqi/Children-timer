@@ -1,9 +1,9 @@
-/* 全局：可爱字体、白色背景、居中布局 */
+/* 全局 */
 body {
   margin: 0;
   padding: 0;
   background: #fff;
-  font-family: 'Fredoka One', sans-serif;
+  font-family: "Fredoka One", sans-serif;
   color: #333;
   text-align: center;
   min-height: 100vh;
@@ -15,16 +15,15 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 10px 15px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
   background: #fff;
-  position: relative;
 }
+
 .app-title {
   font-size: 1.4rem;
   color: #333;
 }
 
-/* 回到登录页面的按钮 */
 .menu-btn {
   background: none;
   border: none;
@@ -34,26 +33,14 @@ body {
   padding: 8px 12px;
 }
 
-/* 页面的主内容区域 */
+/* 页面内容 */
 .page-content {
   padding: 20px;
   max-width: 700px;
   margin: 0 auto;
 }
 
-/* 登录页标题 */
-#login-page h1 {
-  font-size: 1.6rem;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-/* 按钮组 */
-.btn-group {
-  margin-top: 15px;
-}
-
-/* 大按钮：圆角、渐变、白字 */
+/* 按钮 */
 .big-btn {
   display: inline-block;
   padding: 15px 25px;
@@ -64,15 +51,14 @@ body {
   margin: 10px;
   color: #fff;
   background: linear-gradient(135deg, #fa5c54, #fa8132);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
 }
 .big-btn:hover {
   transform: scale(1.03);
 }
 
-/* -------------------- 登录页：孩子信息列表 -------------------- */
-
+/* 登录页：孩子列表 */
 #children-list {
   margin: 0 auto;
   max-width: 400px;
@@ -84,7 +70,7 @@ body {
   border-radius: 10px;
   margin-bottom: 10px;
   position: relative;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
 }
 .child-entry input {
   width: 100%;
@@ -93,7 +79,7 @@ body {
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ddd;
-  font-family: 'Fredoka One', sans-serif;
+  font-family: "Fredoka One", sans-serif;
   font-size: 0.9rem;
 }
 .delete-btn {
@@ -111,7 +97,7 @@ body {
   background: #ccc;
 }
 
-/* -------------------- 计时器页面 -------------------- */
+/* 计时器页：卡片列表 */
 .card-list {
   display: flex;
   flex-wrap: wrap;
@@ -120,16 +106,15 @@ body {
   margin-bottom: 25px;
 }
 
-/* 单个孩子的卡片（渐变背景 + 头像） */
+/* 单个孩子的卡片（渐变背景 + 圆形头像 + 名字 + 冠冕） */
 .avatar-card {
   width: 160px;
-  min-width: 140px;
   height: 220px;
   border-radius: 20px;
   background: linear-gradient(135deg, #fac532, #f9a633);
   position: relative;
   overflow: visible;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: transform 0.2s;
   display: flex;
@@ -141,7 +126,7 @@ body {
   transform: scale(1.04);
 }
 
-/* 头像容器：圆形，居中放置 */
+/* 圆形头像 */
 .avatar-circle {
   width: 80px;
   height: 80px;
@@ -149,7 +134,7 @@ body {
   border-radius: 50%;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 .avatar-circle img {
   width: 100%;
@@ -157,15 +142,15 @@ body {
   object-fit: cover;
 }
 
-/* 孩子名字，放卡片底部或中部 */
+/* 名字 */
 .card-name {
   margin-top: 10px;
   font-size: 1rem;
   color: #fff;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-/* 皇冠贴纸 */
+/* 皇冠 */
 .crown {
   width: 40px;
   height: 40px;
@@ -180,24 +165,34 @@ body {
   object-fit: contain;
 }
 
-/* 当前计时的标签 */
+/* 计时器显示 */
 .current-timer-label {
   font-size: 1.2rem;
   margin-bottom: 20px;
   color: #444;
 }
 
-/* 总时长区域 */
+/* 总时长区 */
 .summary-area {
   background: #fafafa;
   padding: 15px;
   border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
   display: inline-block;
   text-align: left;
+  min-width: 250px;
+  margin: 0 auto;
 }
-.summary-area p {
+.summary-area div {
   margin: 5px 0;
   font-size: 0.95rem;
   color: #333;
+}
+.summary-area button {
+  margin-left: 10px;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
 }

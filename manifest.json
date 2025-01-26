@@ -1,0 +1,15 @@
+{
+  "name": "孩子计时器",
+  "short_name": "计时器",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FFD3E2",
+  "theme_color": "#FF8B6A",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

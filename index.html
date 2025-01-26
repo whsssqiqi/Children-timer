@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>孩子计时器</title>
+  
+  <!-- 让 iOS Safari 支持全屏显示（PWA） -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- 应用图标 -->
+  <link rel="apple-touch-icon" href="icon.png">
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- 引入可爱的字体 (Google Fonts) -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+
+  <!-- 引入 CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- 登录界面 -->
+  <div id="login-page">
+    <h1>请输入孩子的姓名和头像</h1>
+    
+    <!-- 孩子信息列表容器 -->
+    <div id="children-list"></div>
+
+    <!-- 添加孩子 & 开始按钮 -->
+    <button id="add-child-button" class="large-btn">添加孩子</button>
+    <button id="start-timer-button" class="large-btn">开始计时器</button>
+  </div>
+
+  <!-- 计时器界面 -->
+  <div id="timer-page" style="display: none;">
+    <h1>点击头像争夺皇冠</h1>
+    <div id="avatars-container"></div>
+
+    <div id="current-timer">当前计时: 0秒</div>
+
+    <!-- 所有孩子的计时汇总 -->
+    <h2>所有孩子的总时长</h2>
+    <div id="summary-list"></div>
+
+    <button id="back-to-login" class="large-btn">返回登录页面</button>
+  </div>
+
+  <!-- 引入 JS -->
+  <script src="app.js"></script>
+  <script>
+    // 注册 Service Worker (如不需离线功能，可删除此段)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker
+          .register('./service-worker.js')
+          .then(() => console.log('Service Worker 注册成功'))
+          .catch(err => console.log('Service Worker 注册失败:', err));
+      });
+    }
+  </script>
+</body>
+</html>

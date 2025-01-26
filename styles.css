@@ -1,0 +1,151 @@
+/* 使用可爱、圆润的风格和渐变背景 */
+body {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  font-family: 'Fredoka One', sans-serif; /* 可爱字体 */
+  background: linear-gradient(135deg, #FFD3E2 0%, #A2D2FF 100%);
+  min-height: 100vh;
+  color: #333;
+}
+
+/* 标题设计 */
+h1, h2 {
+  margin-top: 20px;
+  color: #4a4a4a;
+}
+
+/* 页面容器统一一些内边距 */
+#login-page, #timer-page {
+  padding: 10px;
+}
+
+/* 大按钮通用样式 */
+.large-btn {
+  display: inline-block;
+  background-color: #FF8B6A;
+  color: #fff;
+  padding: 15px 25px;
+  border: none;
+  font-size: 1rem;
+  border-radius: 30px;
+  cursor: pointer;
+  margin: 10px 5px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+  transition: background-color 0.3s;
+}
+.large-btn:hover {
+  background-color: #ff7150;
+}
+
+/* 登录界面中的孩子信息容器 */
+#children-list {
+  margin: 20px auto;
+  max-width: 400px;
+  text-align: left;
+}
+
+/* 单个孩子的输入卡片 */
+.child-entry {
+  position: relative;
+  background: #fff;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+}
+
+/* 输入框统一样式 */
+.child-entry input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-family: 'Fredoka One', sans-serif;
+}
+
+/* 删除按钮 */
+.delete-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #F44336;
+  border: none;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.delete-btn:hover {
+  background-color: #d7392e;
+}
+
+/* 计时器界面 */
+#avatars-container {
+  margin: 20px;
+}
+
+/* 头像圆形卡片 */
+.avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  margin: 10px;
+  display: inline-block;
+  background-color: #f0f0f0;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+  transition: transform 0.2s;
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 皇冠图标 */
+.avatar .crown {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  background-color: gold;
+  border-radius: 50%;
+  display: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* 当前计时显示 */
+#current-timer {
+  margin-top: 20px;
+  font-size: 1.4rem;
+  color: #000;
+}
+
+/* 所有孩子的总时长 */
+#summary-list {
+  margin-top: 10px;
+  background: #fff;
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 12px;
+  text-align: left;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+}
+
+#summary-list p {
+  margin: 5px 0;
+  color: #333;
+}

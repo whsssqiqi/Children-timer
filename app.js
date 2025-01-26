@@ -1,162 +1,76 @@
-const loginPage = document.getElementById('loginPage');
-const appPage = document.getElementById('appPage');
-const loginForm = document.getElementById('loginForm');
-const usernameInput = document.getElementById('username');
-const avatarInput = document.getElementById('avatar');
-const addCharacterBtn = document.getElementById('addCharacterBtn');
-const confirmBtn = document.getElementById('confirmBtn');
-const characterList = document.getElementById('characterList');
-const childList = document.getElementById('childList');
-const timerDisplay = document.getElementById("timerDisplay");
-const endOfDayBtn = document.getElementById('endOfDayBtn');
-const championDisplay = document.getElementById('championDisplay');
-const championAvatar = document.getElementById('championAvatar');
-const championName = document.getElementById('championName');
-const resetBtn = document.getElementById('resetBtn');
+const children = [
+    { name: "小明", avatar: "https://via.placeholder.com/100/FF6347/FFFFFF?text=小明" },
+    { name: "小红", avatar: "https://via.placeholder.com/100/32CD32/FFFFFF?text=小红" },
+    { name: "小刚", avatar: "https://via.placeholder.com/100/1E90FF/FFFFFF?text=小刚" },
+];
 
-let children = JSON.parse(localStorage.getItem('children')) || [];
-let timers = []; // 存储每个角色的计时器
-let activeTimers = []; // 存储每个角色的计时器
-let timeStates = []; // 存储每个角色的时间状态（暂停时的时间）
-let currentTimerIndex = -1; // 当前持有皇冠的角色索引
+let currentChild = null;
+let timers = {};
+let currentTimerInterval = null;
+let winner = { name: "", time: 0 };
 
-// 加载并显示已存储的角色
+// 页面加载时，动态创建孩子头像
 function loadChildren() {
-    if (children.length > 0) {
-        loginPage.style.display = 'none';
-        appPage.style.display = 'block';
-        renderChildren();
-    }
-}
-
-// 在计时器页面渲染角色
-function renderChildren() {
-    childList.innerHTML = '';
+    const childList = document.getElementById("childList");
     children.forEach((child, index) => {
-        const childElement = document.createElement('div');
-        childElement.classList.add('character-item');
+        const childElement = document.createElement("div");
+        childElement.classList.add("child-item");
         childElement.innerHTML = `
             <img src="${child.avatar}" alt="${child.name}" onclick="startTimer(${index})">
-            <p>${child.name}</p>
-            <button class="delete-btn" onclick="deleteCharacter(${index})">×</button>
-            <img class="crown" src="icon.png" style="display:none;" />
-            <span id="timer-${index}" class="timer-text">00:00</span>
+            <img class="crown" src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Gold_crown.svg" style="display:none;" />
         `;
         childList.appendChild(childElement);
     });
 }
 
-// 点击加号按钮时显示角色输入框
-addCharacterBtn.addEventListener('click', function() {
-    usernameInput.value = '';
-    avatarInput.value = '';
-
-    loginPage.style.display = 'block';
-    appPage.style.display = 'none';
-});
-
-// 点击确认按钮，跳转到计时器页面
-confirmBtn.addEventListener('click', function() {
-    const username = usernameInput.value;
-    const avatarFile = avatarInput.files[0];
-    
-    if (username && avatarFile) {
-        const reader = new FileReader();
-        reader.onload = function() {
-            const avatarUrl = reader.result;
-            const child = { name: username, avatar: avatarUrl };
-            children.push(child);
-            localStorage.setItem('children', JSON.stringify(children)); // 保存到localStorage
-
-            renderChildren();  // 渲染角色列表
-            confirmBtn.style.display = 'none'; // 隐藏确认按钮
-            loginPage.style.display = 'none'; // 隐藏登录界面
-            appPage.style.display = 'block';  // 显示计时器页面
-        };
-        reader.readAsDataURL(avatarFile);
-    }
-});
-
-// 删除成员
-function deleteCharacter(index) {
-    children.splice(index, 1);
-    localStorage.setItem('children', JSON.stringify(children)); // 更新localStorage
-    renderChildren();
-    resetTimers(); // 删除成员时，重置所有计时器
-}
-
-// 点击头像后启动计时器
+// 启动计时器
 function startTimer(index) {
     // 停止当前计时器
-    if (currentTimerIndex !== -1 && currentTimerIndex !== index) {
-        clearInterval(activeTimers[currentTimerIndex]); // 停止其他计时器
-        const oldTimer = document.getElementById(`timer-${currentTimerIndex}`);
-        oldTimer.style.fontWeight = 'normal'; // 恢复之前计时器样式
+    if (currentTimerInterval) {
+        clearInterval(currentTimerInterval);
     }
 
-    // 隐藏其他皇冠
-    const allCrowns = document.querySelectorAll('.crown');
-    allCrowns.forEach(crown => crown.style.display = 'none');
-    
-    // 显示当前头像的皇冠
-    const crown = childList.children[index].querySelector('.crown');
-    crown.style.display = 'block';
+    // 切换皇冠
+    const currentChildElement = document.querySelectorAll('.child-item')[currentChild]?.querySelector('.crown');
+    if (currentChildElement) {
+        currentChildElement.style.display = 'none';
+    }
 
-    // 设置当前角色为正在计时的角色
-    currentTimerIndex = index;
+    currentChild = index;
+    const newChildElement = document.querySelectorAll('.child-item')[currentChild]?.querySelector('.crown');
+    newChildElement.style.display = 'block';
 
-    // 更新计时器显示
-    const currentTimerText = document.getElementById(`timer-${index}`);
-    currentTimerText.style.fontWeight = 'bold'; // 高亮显示当前角色的计时器
-
-    let time = timeStates[index] || 0; // 如果之前有暂停时间则继续
-    activeTimers[index] = setInterval(function() {
-        time++;
-        timeStates[index] = time; // 保存当前时间状态
-        const minutes = Math.floor(time / 60);
-        const seconds = time % 60;
-        currentTimerText.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    // 启动新的计时器
+    timers[currentChild] = timers[currentChild] || 0;
+    currentTimerInterval = setInterval(() => {
+        timers[currentChild]++;
+        const minutes = Math.floor(timers[currentChild] / 60);
+        const seconds = timers[currentChild] % 60;
+        document.getElementById("timerDisplay").textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }, 1000);
 }
 
-// 结算今天的冠军
-endOfDayBtn.addEventListener('click', function() {
-    let longestTime = 0;
-    let championIndex = -1;
-
-    timeStates.forEach((time, index) => {
-        if (time > longestTime) {
-            longestTime = time;
-            championIndex = index;
+// 结束当天的计时，统计冠军
+document.getElementById("endDay").addEventListener("click", function() {
+    // 找出持有最多时间的孩子
+    let maxTime = 0;
+    let winnerIndex = -1;
+    for (let i = 0; i < children.length; i++) {
+        if (timers[i] > maxTime) {
+            maxTime = timers[i];
+            winnerIndex = i;
         }
-    });
+    }
 
-    if (championIndex >= 0) {
-        championAvatar.src = children[championIndex].avatar;
-        championName.textContent = children[championIndex].name;
-        championDisplay.style.display = 'block';
+    if (winnerIndex !== -1) {
+        winner.name = children[winnerIndex].name;
+        winner.time = maxTime;
+        const minutes = Math.floor(winner.time / 60);
+        const seconds = winner.time % 60;
+        document.getElementById("winnerName").textContent = winner.name;
+        document.getElementById("winnerTime").textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 });
 
-// 重置按钮
-resetBtn.addEventListener('click', function() {
-    loginPage.style.display = 'block';
-    appPage.style.display = 'none';
-    timers = [];
-    activeTimers = [];
-    timeStates = [];
-    championDisplay.style.display = 'none';
-    timerDisplay.textContent = '00:00';
-});
-
-// 重置所有计时器
-function resetTimers() {
-    activeTimers.forEach(timer => clearInterval(timer)); // 停止所有计时器
-    timeStates = []; // 清除所有计时状态
-    timers = []; // 清空所有计时器数据
-    const allTimers = document.querySelectorAll('.timer-text');
-    allTimers.forEach(timer => timer.textContent = '00:00'); // 重置所有计时器显示
-}
-
-// 在页面加载时检查 localStorage 数据
+// 初始化页面
 loadChildren();
